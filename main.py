@@ -1,4 +1,3 @@
-from typing import Dict
 from livereload import Server
 from flask import Flask, render_template
 import datetime
