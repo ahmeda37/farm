@@ -2,9 +2,9 @@
 
 {% block content %}
     <h1>Sales Order</h1>
-    <div class="info">
+    <div class="info container-fluid">
         <p>Bill To</p>
-        <p>{{this_dict.customer}}</p>
+        <p>{{this_dict.customer}} <span class="float-right">Order#: {{this_dict.sale_order}}</span></p>
         <p>{{this_dict.address}}</p>
     </div>
     <div class="container">
@@ -29,7 +29,7 @@
           <button type="submit" class="btn btn-primary my-3">Add</button>
         </form>
 
-        <table class="table">
+        <table class="table" id ="myTable">
           <thead class="thead-dark header">
             <tr>
               <th scope="col">Item #</th>
@@ -37,6 +37,7 @@
               <th scope="col">Price</th>
               <th scope="col">Quantity</th>
               <th scope="col">Total</th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
@@ -48,6 +49,9 @@
               <td>${{item.price}}</td>
               <td>{{item.quantity}}</td>
               <td>${{item.total}}</td>
+              <form action="http://localhost:5500/delete/{{value}}" method="GET">
+                <td><input type="submit" value="Delete"></td>
+              </form>
             </tr>
             {% endfor %}
             {% endif %}
@@ -60,6 +64,22 @@
         </div>
 
     </div>
+
+    <script>
+    function deleteRow(r) {
+      var i = r.parentNode.parentNode.rowIndex;
+      document.getElementById("myTable").deleteRow(i);
+    }
+    $("#delete_btn").click(function (r) {
+      var i = r.parentNode.parentNode.rowIndex;
+      document.getElementById("myTable").deleteRow(i);
+      $.ajax({
+        url:"http://localhost:5500/{{i}}",
+        method:"DELETE"
+      });
+      return false;
+    });
+    </script>
 
 
 {% endblock content %}
