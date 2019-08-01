@@ -1,75 +1,91 @@
-{% extends "base.html" %}
-
-{% block content %}
-    <h1>Sales Order</h1>
-    <div class="info container-fluid">
-        <p>Bill To</p>
-        <p>{{this_dict.customer}} <span class="float-right">Order#: {{this_dict.sale_order}}</span></p>
-        <p>{{this_dict.address}}</p>
-    </div>
-    <div class="container">
-        <form class="form-row" action="http://localhost:5500/" method="POST">
-          <div class="form-group col-5">
-              <label for="item-name">Item</label>
-              <select class="form-control" name="item-name" required>
-                {% for id,name in items.items() %}
-                <option>{{id}}-{{name}}</option>
-                }
+{% extends "base.html" %} {% block content %}
+<h1 class="my-3">Sales Order<span class="float-right">SO#{% if curOID %}{{curOID}}{%endif%}</span></h1>
+<div class="info container-fluid my-5">
+  <p><strong>Bill To:</strong></p>
+  {%if customer%}
+  <p>{{customer[1]}}</p>
+  <p>{{customer[2]}}</p>
+  {% else %}
+  <select id="customerSelect" class="form-control" name="item-name" required>
+      {% for id,name,address in customers %}
+      <option value="{{id}}">{{id}}-{{name}} {{address}}
+      </option>
+      {%endfor%}
+  </select>
+  <button id="setCustomer" class="btn btn-primary my-3">Set</button>
+  {% endif %}
+</div>
+        <script>
+          $(document).ready(function(){
+              $('#setCustomer').click(function(){
+                var id = $('#customerSelect').find(":selected").val();
+              $.get({url: "http://localhost:5500/setCustomer/"+id},function(){
+                location.reload();
+              });
+          });
+          });
+        </script>
+<div class="container">
+    <form class="form-row" action="http://localhost:5500/" method="POST">
+        <div class="form-group col-5">
+            <label for="item-name">Item</label>
+            <select class="form-control" name="item-name" required>
+                {% for id,name in items %}
+                <option value="{{id}}">{{id}}-{{name}}</option>
+                <button>Select</button>
                 {%endfor%}
-              </select>
-          </div>
-          <div class="form-group col">
+            </select>
+        </div>
+        <div class="form-group col">
             <label for="price">Price</label>
             <input type="number" class="form-control" name="price" min="0" required>
-          </div>
-          <div class="form-group col">
+        </div>
+        <div class="form-group col">
             <label for="quantity">Quantity</label>
             <input type="number" class="form-control" name="quantity" step="1" min="1" required>
-          </div>
-          <button type="submit" class="btn btn-primary my-3">Add</button>
-        </form>
+        </div>
+        <button type="submit" class="btn btn-primary my-3">Add</button>
+    </form>
 
-        <table class="table" id ="myTable">
-          <thead class="thead-dark header">
+    <table class="table" id="myTable">
+        <thead class="thead-dark header">
             <tr>
-              <th scope="col">Item #</th>
-              <th scope="col">Description</th>
-              <th scope="col">Price</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Total</th>
-              <th scope="col"></th>
+                <th scope="col">Item #</th>
+                <th scope="col">Description</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+                <th scope="col"></th>
             </tr>
-          </thead>
-          <tbody>
-            {% if result %}
-            {% for value,item in result.items() %}
+        </thead>
+        <tbody>
+            {% if result %}{% for key in result%}
             <tr>
-              <th scope="row">{{item.id}}</th>
-              <td>{{item.name}}</td>
-              <td>${{item.price}}</td>
-              <td>{{item.quantity}}</td>
-              <td>${{item.total}}</td>
-              <form action="http://localhost:5500/delete/{{value}}" method="GET">
-                <td><input type="submit" value="Delete"></td>
-              </form>
+                <th scope="row">{{key[0]}}</th>
+                <td>{{key[1]}}</td>
+                <td>${{key[2]}}</td>
+                <td>{{key[3]}}</td>
+                <td>${{key[2]*key[3]}}</td>
+                <form action="http://localhost:5500/delete/{{value}}" method="GET">
+                    <td>
+                        <input type="submit" value="Delete">
+                    </td>
+                </form>
             </tr>
-            {% endfor %}
-            {% endif %}
-            </tr>
-          </tbody>
-        </table>
-        <div>
-            <span class="float-left">
-              <form action="http://localhost:5500/save/{{this_dict.sale_order}}" method="POST">
+            {% endfor %}{% endif %}
+        </tbody>
+    </table>
+    <div>
+        <span class="float-left">
+              <form action="http://localhost:5500/save/1234" method="POST">
                 <button type="submit" class="btn btn-primary">
                   Save
                 </button>
               </form>
             </span>
-            <span class="float-right"><strong>Total:</strong>${{total}}</span>
-        </div>
-
+        <span class="float-right"><strong>Total:</strong>${{total}}</span>
     </div>
 
+</div>
 
 {% endblock content %}
