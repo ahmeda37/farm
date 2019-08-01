@@ -16,7 +16,8 @@ items = {
 order={}
 count=0
 total=0
-
+orders={}
+counter=0
 @app.route('/',methods =['POST','GET'])
 def index():
     global count
@@ -54,10 +55,26 @@ def save_order(sale_order):
     global count
     global total
     global order
+    global orders
+    global counter
+    if(count > 0):
+        item={
+            'order':order,
+            'count':count,
+            'this_dict':this_dict
+        }
+        orders.update({counter:item})
+        counter += 1
     count = 0
     total = 0
     order = {}
-    return redirect("/")
+    return redirect("/orders")
+
+@app.route('/orders',methods=['GET'])
+def showOrders():
+    print(orders)
+    return render_template('sale_orders.html',orders=orders)
+
 if __name__ == '__main__':
     app.debug=True
     server = Server(app.wsgi_app)

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+        <table class="table" id ="myTable">
+          <thead class="thead-dark header">
+            <tr>
+              <th scope="col">Order #</th>
+              <th scope="col">Customer</th>
+              <th scope="col">Total</th>
+              <th scope="col">Date</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+          	{% if orders%}
+          	{%for key,value in orders.items()%}
+            <tr>
+              <th scope="row">{{value.this_dict.sale_order}}</th>
+              <td>{{value.this_dict.customer}}</td>
+              <td>${{value.order[key].total}}</td>
+              <td>{{value.this_dict.date}}</td>
+            </tr>
+            </tr>
+            {%endfor%}
+            {%endif%}
+          </tbody>
+        </table>
+
+{% endblock content%}
