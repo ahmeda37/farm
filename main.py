@@ -1,5 +1,5 @@
 from livereload import Server
-from flask import Flask, render_template,request
+from flask import Flask, render_template,request, redirect
 import datetime
 app = Flask(__name__)
 this_dict ={
@@ -21,6 +21,7 @@ total=0
 def index():
     global count
     global total
+    global order
     if request.method == 'POST':
         result = request.form
         item = {
@@ -36,7 +37,7 @@ def index():
         count +=1
         total += item['total']
         return render_template('index.html', this_dict=this_dict, items=items, result=order,total=total)
-    return render_template('index.html',this_dict=this_dict,items=items)
+    return render_template('index.html',this_dict=this_dict,items=items, result=order,total=total)
 
 @app.route('/delete/<value>',methods=['GET'])
 def delete_item(value):
@@ -46,8 +47,17 @@ def delete_item(value):
     total = total - int(order[value]['total'])
     count -= 1
     del order[value]
-    return render_template('index.html', this_dict=this_dict, items=items, result=order,total=total)
+    return redirect("/")
 
+@app.route('/save/<sale_order>',methods=['POST'])
+def save_order(sale_order):
+    global count
+    global total
+    global order
+    count = 0
+    total = 0
+    order = {}
+    return redirect("/")
 if __name__ == '__main__':
     app.debug=True
     server = Server(app.wsgi_app)

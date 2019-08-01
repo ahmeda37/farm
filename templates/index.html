@@ -56,30 +56,20 @@
             {% endfor %}
             {% endif %}
             </tr>
-
           </tbody>
         </table>
         <div>
+            <span class="float-left">
+              <form action="http://localhost:5500/save/{{this_dict.sale_order}}" method="POST">
+                <button type="submit" class="btn btn-primary">
+                  Save
+                </button>
+              </form>
+            </span>
             <span class="float-right"><strong>Total:</strong>${{total}}</span>
         </div>
 
     </div>
-
-    <script>
-    function deleteRow(r) {
-      var i = r.parentNode.parentNode.rowIndex;
-      document.getElementById("myTable").deleteRow(i);
-    }
-    $("#delete_btn").click(function (r) {
-      var i = r.parentNode.parentNode.rowIndex;
-      document.getElementById("myTable").deleteRow(i);
-      $.ajax({
-        url:"http://localhost:5500/{{i}}",
-        method:"DELETE"
-      });
-      return false;
-    });
-    </script>
 
 
 {% endblock content %}
