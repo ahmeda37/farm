@@ -58,6 +58,21 @@ def showOrders():
         ttotal = ttotal + key[2]
     return render_template('sale_orders.html',orders=orders,total=ttotal)
 
+@app.route('/orders/update/<id>',methods=['GET'])
+def update_Order(id):
+    global open_order
+    global curCID
+    global curOID
+    global total
+    print(type(id))
+    open_order = True
+    curOID = str(id)
+    curCID = str(queries.getCustomerBySO(id,mysql)[0])
+    total = int(queries.getTotal(curOID,mysql)[0])
+    return render_template('index.html',customer=queries.getCustomer(curCID,mysql),items=queries.getProducts(mysql),result=queries.getOrderItems(curOID,mysql),total=total,curOID=curOID)
+
+
+
 @app.route('/orders/delete/<id>',methods=['GET'])
 def delete_Order(id):
     queries.deleteOrder(id,mysql)

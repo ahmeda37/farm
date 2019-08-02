@@ -6,6 +6,13 @@ def getCustomer(id,mysql):
     myresult = cur.fetchone()
     cur.close()
     return myresult
+def getCustomerBySO(id,mysql):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT cid FROM sale_orders where oid="+str(id)+"")
+    mysql.connection.commit()
+    myresult = cur.fetchone()
+    cur.close()
+    return myresult
 def getCustomers(mysql):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM customers")
