@@ -52,7 +52,7 @@ def setOrder(id):
     return myresult
 def saveItem(item):
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO single_order VALUES ("+str(curOID)+","+str(item['id'])+","+str(item['price'])+","+str(item['quantity'])+")")
+    cur.execute("INSERT INTO single_order (oid,pid,price,quantity) VALUES ("+str(curOID)+","+str(item['id'])+","+str(item['price'])+","+str(item['quantity'])+")")
     mysql.connection.commit()
     cur.execute("SELECT * from single_order where oid="+curOID+" and pid="+item['id']+"")
     mysql.connection.commit()
@@ -61,11 +61,34 @@ def saveItem(item):
     return myresult
 def getOrderItems():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT products.pid, products.name, single_order.price, single_order.quantity from single_order inner join products on products.pid = single_order.pid where single_order.oid = "+curOID+"")
+    cur.execute("SELECT products.pid, products.name, single_order.singleid, single_order.price, single_order.quantity from single_order inner join products on products.pid = single_order.pid where single_order.oid = "+curOID+"")
     mysql.connection.commit()
     myresult = cur.fetchall()
     return myresult
-
+def deleteItem(value):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM single_order where singleid ="+value+"")
+    mysql.connection.commit()
+    myresult = cur.fetchone()
+    return myresult
+def updateTotal(value):
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE sale_orders SET total="+str(value)+" where oid ="+curOID+"")
+    mysql.connection.commit()
+    myresult = cur.fetchone()
+    return myresult
+def getTotal():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT total from sale_orders where oid ="+str(curOID)+"")
+    mysql.connection.commit()
+    myresult = cur.fetchone()
+    return myresult
+def getItem(value):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT price,quantity from single_order where singleid="+value+"")
+    mysql.connection.commit()
+    myresult = cur.fetchone()
+    return myresult
 @app.route('/',methods =['POST','GET'])
 def index():
     global count
@@ -78,7 +101,7 @@ def index():
             'name':result['item-name'][2:],
             'price':result['price'],
             'quantity':result['quantity'],
-            'total':int(result['price']) * int(result['quantity'])
+            'total':total+int(result['price']) * int(result['quantity'])
         }
         myresult = saveItem(item)
         #print(item)
@@ -86,8 +109,11 @@ def index():
         order = getOrderItems();
         #print(order)
         #count +=1
-        total += item['total']
+        updateTotal(item['total'])
+        total = item['total']
+
     if open_order == True:
+        order = getOrderItems();
         return render_template('index.html',customer=getCustomer(curCID),items=getProducts(),result=order,total=total,curOID=curOID)
     return render_template('index.html',customers=getCustomers(),items=getProducts(), result=order,total=total)
 
@@ -96,9 +122,14 @@ def delete_item(value):
     global count
     global total
     value = int(value)
-    total = total - int(order[value]['total'])
-    count -= 1
-    del order[value]
+    #print(value)
+    #print(getItem(str(value)))
+    price = getItem(str(value))
+    total = total - (price[0]*price[1])
+    deleteItem(str(value))
+    updateTotal(total)
+    #total = total - int(order[value]['total'])
+    #del order[value]
     return redirect("/")
 
 @app.route('/save/<sale_order>',methods=['POST'])
