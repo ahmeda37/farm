@@ -86,6 +86,11 @@
                   Save
                 </button>
               </form>
+              <form class="my-5" action="http://localhost:5500/orders/delete/{{curOID}}" method="GET">
+                <button type="submit" class="btn btn-primary">
+                  Delete
+                </button>
+              </form>
             </span>
         <span class="float-right"><strong>Total:</strong>${{total}}</span>
     </div>
