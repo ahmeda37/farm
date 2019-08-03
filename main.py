@@ -89,6 +89,10 @@ def setCustomer(id):
         open_order = True
     return redirect('/')
 
+@app.route('/add',methods=['GET'])
+def add():
+    return render_template('add.html')
+
 if __name__ == '__main__':
     app.debug=True
     server = Server(app.wsgi_app)
