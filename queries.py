@@ -20,12 +20,26 @@ def getCustomers(mysql):
     myresult = cur.fetchall()
     cur.close()
     return myresult
+def addCustomer(mysql,name,address):
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT into customers (name,address) VALUES ('"+name+"','"+address+"')")
+    mysql.connection.commit()
+    myresult = cur.fetchone()
+    cur.close()
+    return myresult
 #Products----------------------------------------
 def getProducts(mysql):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM products")
     mysql.connection.commit()
     myresult = cur.fetchall()
+    cur.close()
+    return myresult
+def addProduct(mysql,name):
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT into products (name) VALUES ('"+name+"')")
+    mysql.connection.commit()
+    myresult = cur.fetchone()
     cur.close()
     return myresult
 #Sale_Orders-------------------------------------

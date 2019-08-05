@@ -91,7 +91,27 @@ def setCustomer(id):
 
 @app.route('/add',methods=['GET'])
 def add():
+    print(request)
     return render_template('add.html')
+@app.route('/add/customer',methods=['POST'])
+def addCustomer():
+    if request.method == 'POST':
+        result = request.form
+        myresult = queries.addCustomer(mysql,result['name'],result['address'])
+    return redirect('/add/customer/success')
+@app.route('/add/customer/success', methods=['GET'])
+def addCustomerSuccess():
+    return render_template('add.html',alert="Custoemr has been added")
+
+@app.route('/add/product',methods=['POST'])
+def addProduct():
+    if request.method == 'POST':
+        result = request.form
+        myresult = queries.addProduct(mysql,result['name'])
+    return redirect('/add/product/success')
+@app.route('/add/product/success',methods=['GET'])
+def addProductSuccess(): 
+    return render_template('add.html',alert='Product has been added')
 
 if __name__ == '__main__':
     app.debug=True
