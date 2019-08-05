@@ -71,13 +71,27 @@ def update_Order(id):
     total = int(queries.getTotal(curOID,mysql)[0])
     return render_template('index.html',customer=queries.getCustomer(curCID,mysql),items=queries.getProducts(mysql),result=queries.getOrderItems(curOID,mysql),total=total,curOID=curOID)
 
-
-
 @app.route('/orders/delete/<id>',methods=['GET'])
 def delete_Order(id):
     queries.deleteOrder(id,mysql)
     return redirect('/orders')
 
+@app.route('/invoices',methods=['GET','POST'])
+def showInvoices():
+    global open_order
+    global total
+    if request.method == 'POST':
+        result = request.form
+        myresult = queries.paidOrder(mysql,curOID,curCID)
+        return redirect('/invoices')
+    open_order = False
+    total = 0
+    ttotal = 0
+    myresult = queries.getInvoices(mysql)
+    print(myresult)
+    for key in myresult:
+        ttotal = ttotal + key[2] 
+    return render_template('invoice.html',orders=myresult,total=ttotal)
 @app.route('/setCustomer/<id>',methods=['GET'])
 def setCustomer(id):
     global open_order

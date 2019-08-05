@@ -1,0 +1,29 @@
+{% extends "base.html" %} {% block content %}
+<table class="table" id="myTable">
+    <thead class="thead-dark header">
+        <tr>
+            <th scope="col">Invoice #</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Total</th>
+            <th scope="col">Date</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if orders%} {%for key in orders%}
+        <tr>
+            <th scope="row"><a href="http://localhost:5500/orders/update/{{key[0]}}">{{key[0]}}</a></th>
+            <td>{{key[1]}}</td>
+            <td>${{key[2]}}</td>
+            <td>{{key[3]}}</td>
+            <form action="http://localhost:5500/orders/delete/{{key[0]}}" method="GET">
+                <td>
+                    <input type="submit" value="Delete">
+                </td>
+            </form>
+        </tr>
+        </tr>
+        {%endfor%} {%endif%}
+    </tbody>
+</table>
+<h2>Total:${{total}}</h2> {% endblock content%}
