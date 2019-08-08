@@ -15,12 +15,14 @@ app.config['MYSQL_HOST'] = host
 mysql = MySQL(app)
 login = LoginManager(app)
 
-from models import user
+from models import user, product, customer, sale_order
 
 open_order = False
 curCID = 0
 curOID = 0
 total=0
+curOrder = sale_order.Sale_order()
+curCustomer = customer.Customer()
 
 @app.route('/signup',methods=['POST','GET'])
 def sign_up():
@@ -37,25 +39,28 @@ def sign_up():
 @app.route('/',methods =['POST','GET'])
 def index():
     global total
-    #user = User.User()
-    #user.set_password('secret')
-    #print(user.check_password('seet'))
     if request.method == 'POST':
         result = request.form
+        print("result is: "+str(result))
         item = {
             'id':result['item-name'][:1],
             'name':result['item-name'][2:],
             'price':result['price'],
             'quantity':result['quantity'],
-            'total':total+int(result['price']) * int(result['quantity'])
+            'total':int(result['price']) * int(result['quantity'])
         }
+        print(result['item-name'])
+        curOrder.add_item(item)
+        curOrder.add_total(item['total'])
+        print(curOrder.get_total())
         myresult = queries.saveItem(item,curOID)
         queries.updateTotal(item['total'],curOID)
         total = item['total']
     if open_order == True:
-        queries.updateTotal(total,curOID)
-        return render_template('index.html',customer=queries.getCustomer(curCID),items=queries.getProducts(),result=queries.getOrderItems(curOID),total=total,curOID=curOID)
-    return render_template('index.html',customers=queries.getCustomers(),items=queries.getProducts(), result=queries.getOrderItems(curOID),total=total)
+    #    queries.updateTotal(total,curOID)
+     #   print(curOrder.get_items())
+        return render_template('index.html',customer=customer.getCustomer(curCID),items=product.getProducts(),result=curOrder.get_items(),total=curOrder.get_total(),curOID=curOID)
+    return render_template('index.html',customers=customer.getCustomers())
 
 @app.route('/delete/<value>',methods=['GET'])
 def delete_item(value):
@@ -85,12 +90,11 @@ def update_Order(id):
     global curCID
     global curOID
     global total
-    print(type(id))
     open_order = True
     curOID = str(id)
     curCID = str(queries.getCustomerBySO(id)[0])
     total = int(queries.getTotal(curOID)[0])
-    return render_template('index.html',customer=queries.getCustomer(curCID),items=queries.getProducts(),result=queries.getOrderItems(curOID),total=total,curOID=curOID)
+    return render_template('index.html',customer=queries.getCustomer(curCID),items=product.getProducts(),result=queries.getOrderItems(curOID),total=total,curOID=curOID)
 
 @app.route('/orders/delete/<id>',methods=['GET'])
 def delete_Order(id):
@@ -113,13 +117,17 @@ def showInvoices():
     for key in myresult:
         ttotal = ttotal + key[2] 
     return render_template('invoice.html',orders=myresult,total=ttotal)
+
 @app.route('/setCustomer/<id>',methods=['GET'])
 def setCustomer(id):
     global open_order
     global curCID
     global curOID
     if (open_order != True):
-        curCID = str(queries.getCustomer(id)[0])
+        curCustomer = customer.getCustomer(id)
+        curOrder.Sale_order(0,curCustomer,[])
+        curCID = curCustomer.get_cid()
+        print(curCID)
         curOID = str(queries.setOrder(id)[0])
         open_order = True
     return redirect('/')
@@ -132,7 +140,9 @@ def add():
 def addCustomer():
     if request.method == 'POST':
         result = request.form
-        myresult = queries.addCustomer(result['name'],result['address'])
+        newCustomer = customer.Customer()
+        newCustomer.Customer(result['name'],result['address'])
+        myresult = customer.addCustomer(newCustomer)
     return redirect('/add/customer/success')
 @app.route('/add/customer/success', methods=['GET'])
 def addCustomerSuccess():
@@ -142,7 +152,9 @@ def addCustomerSuccess():
 def addProduct():
     if request.method == 'POST':
         result = request.form
-        myresult = queries.addProduct(result['name'])
+        newProduct = product.Product()
+        newProduct.Product(result['name'])
+        myresult = product.addProduct(newProduct)
     return redirect('/add/product/success')
 @app.route('/add/product/success',methods=['GET'])
 def addProductSuccess(): 

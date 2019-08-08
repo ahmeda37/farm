@@ -1,49 +1,4 @@
 from main import mysql
-
-#Customers--------------------------------------
-def getCustomer(id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM customers where cid="+id)
-    mysql.connection.commit()
-    myresult = cur.fetchone()
-    cur.close()
-    return myresult
-def getCustomerBySO(id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT cid FROM sale_orders where oid="+str(id)+"")
-    mysql.connection.commit()
-    myresult = cur.fetchone()
-    cur.close()
-    return myresult
-def getCustomers():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM customers")
-    mysql.connection.commit()
-    myresult = cur.fetchall()
-    cur.close()
-    return myresult
-def addCustomer(name,address):
-    cur = mysql.connection.cursor()
-    cur.execute("INSERT into customers (name,address) VALUES ('"+name+"','"+address+"')")
-    mysql.connection.commit()
-    myresult = cur.fetchone()
-    cur.close()
-    return myresult
-#Products----------------------------------------
-def getProducts():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM products")
-    mysql.connection.commit()
-    myresult = cur.fetchall()
-    cur.close()
-    return myresult
-def addProduct(name):
-    cur = mysql.connection.cursor()
-    cur.execute("INSERT into products (name) VALUES ('"+name+"')")
-    mysql.connection.commit()
-    myresult = cur.fetchone()
-    cur.close()
-    return myresult
 #Sale_Orders-------------------------------------
 def setOrder(id):
     cur = mysql.connection.cursor()

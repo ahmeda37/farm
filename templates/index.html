@@ -3,8 +3,8 @@
 <div class="info container-fluid my-5">
     <p><strong>Bill To:</strong></p>
     {%if customer%}
-    <p>{{customer[1]}}</p>
-    <p>{{customer[2]}}</p>
+    <p>{{customer.get_name()}}</p>
+    <p>{{customer.get_address()}}</p>
     {% else %}
     <select id="customerSelect" class="form-control" name="item-name" required>
         {% for id,name,address in customers %}
@@ -35,7 +35,7 @@
             <label for="item-name">Item</label>
             <select class="form-control" name="item-name" required>
                 {% for id,name in items %}
-                <option value="{{id}}">{{id}}-{{name}}</option>
+                <option value="{{id}}-{{name}}">{{id}}-{{name}}</option>
                 <button>Select</button>
                 {%endfor%}
             </select>
@@ -65,12 +65,12 @@
         <tbody>
             {% if result %}{% for key in result%}
             <tr>
-                <th scope="row">{{key[0]}}</th>
-                <td>{{key[1]}}</td>
-                <td>${{key[3]}}</td>
-                <td>{{key[4]}}</td>
-                <td>${{key[3]*key[4]}}</td>
-                <form action="http://localhost:5500/delete/{{key[2]}}" method="GET">
+                <th scope="row">{{key.id}}</th>
+                <td>{{key.name}}</td>
+                <td>${{key.price}}</td>
+                <td>{{key.price}}</td>
+                <td>${{key.total}}</td>
+                <form action="http://localhost:5500/delete/{{key.id}}" method="GET">
                     <td>
                         <input type="submit" value="Delete">
                     </td>

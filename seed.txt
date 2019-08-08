@@ -1,3 +1,5 @@
+create database farm_tester;
+
 CREATE TABLE customers (
     cid INT auto_increment PRIMARY KEY,
     name VARCHAR(20),
