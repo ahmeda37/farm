@@ -1,0 +1,57 @@
+CREATE TABLE customers (
+    cid INT auto_increment PRIMARY KEY,
+    name VARCHAR(20),
+    address varchar(100)
+);
+
+CREATE TABLE sale_orders (
+    oid INT auto_increment primary KEY,
+    cid INT,
+    total INT,
+    paid bool default False,
+    reg_date TIMESTAMP default CURRENT_TIMESTAMP,
+    FOREIGN KEY (cid)
+        REFERENCES customers (cid)
+);
+
+CREATE TABLE products (
+    pid INT auto_increment PRIMARY KEY,
+    name VARCHAR(20)
+);
+
+CREATE TABLE single_order (
+    singleid INT auto_increment primary key,
+    oid INT,
+    pid INT,
+    price INT,
+    quantity INT,
+    FOREIGN KEY (oid)
+        REFERENCES sale_orders (oid),
+    FOREIGN KEY (pid)
+        REFERENCES products (pid)
+);
+
+CREATE TABLE sale_invoices (
+    inid INT AUTO_INCREMENT PRIMARY KEY,
+    oid INT,
+    cid INT,
+    reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (oid)
+        REFERENCES sale_orders (oid),
+    FOREIGN KEY (cid)
+        REFERENCES customers (cid)
+);
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(64),
+    password_hash VARCHAR(128)
+);
+
+insert into customers (name,address) values ("Abdurahman","1234 ST ETOWN");
+insert into customers (name,address) values ("Mohamed","5678 ST ETOWN");
+insert into customers (name,address) values ("Ammaar","9012 ST ETOWN");
+
+insert into products (name) values ("Banana");
+insert into products (name) values ("Lime");
+insert into products (name) values ("Mango");
